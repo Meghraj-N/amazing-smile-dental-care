@@ -854,7 +854,7 @@
         submitBtn.textContent = 'Authenticating...';
 
         const username = document.getElementById('login-username').value.trim();
-        const password = document.getElementById('login-password').value;
+        const password = document.getElementById('login-password').value.trim();
 
         try {
           const res = await fetch('/api/login', {
