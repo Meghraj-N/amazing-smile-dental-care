@@ -1,0 +1,8 @@
+Dockerfile
+.dockerignore
+data/*.json
+*.pdf
+analyze_images.py
+gemini*
+master-prompt
+plan.md
