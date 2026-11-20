@@ -257,26 +257,31 @@ app.use((err, _req, res, _next) => {
 /* --- 12. Graceful Server Startup & Termination --- */
 const server = http.createServer(app);
 
-server.listen(PORT, () => {
-  console.log(`=======================================================`);
-  console.log(`  Amazing Smile Dental Care - Production Server Online `);
-  console.log(`  URL:         http://localhost:${PORT}                 `);
-  console.log(`  Health API:  http://localhost:${PORT}/api/health      `);
-  console.log(`  Mode:        ${process.env.NODE_ENV || "development"} `);
-  console.log(`=======================================================`);
-});
-
-function gracefulShutdown(signal) {
-  console.log(`\n[SHUTDOWN] Received ${signal}. Closing server gracefully...`);
-  server.close(() => {
-    console.log("[SHUTDOWN] All active connections closed. Process terminating.");
-    process.exit(0);
+if (!process.env.VERCEL) {
+  server.listen(PORT, () => {
+    console.log(`=======================================================`);
+    console.log(`  Amazing Smile Dental Care - Production Server Online `);
+    console.log(`  URL:         http://localhost:${PORT}                 `);
+    console.log(`  Health API:  http://localhost:${PORT}/api/health      `);
+    console.log(`  Mode:        ${process.env.NODE_ENV || "development"} `);
+    console.log(`=======================================================`);
   });
-  setTimeout(() => {
-    console.error("[SHUTDOWN] Force closing after 5s timeout.");
-    process.exit(1);
-  }, 5000).unref();
+
+  function gracefulShutdown(signal) {
+    console.log(`\n[SHUTDOWN] Received ${signal}. Closing server gracefully...`);
+    server.close(() => {
+      console.log("[SHUTDOWN] All active connections closed. Process terminating.");
+      process.exit(0);
+    });
+    setTimeout(() => {
+      console.error("[SHUTDOWN] Force closing after 5s timeout.");
+      process.exit(1);
+    }, 5000).unref();
+  }
+
+  process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+  process.on("SIGINT", () => gracefulShutdown("SIGINT"));
 }
 
-process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
-process.on("SIGINT", () => gracefulShutdown("SIGINT"));
+export { app, server };
+export default app;

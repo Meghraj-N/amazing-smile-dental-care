@@ -4,7 +4,9 @@ import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dataDir = path.join(__dirname, "..", "data");
+const isVercel = Boolean(process.env.VERCEL);
+const defaultDataDir = path.join(__dirname, "..", "data");
+const dataDir = isVercel ? path.join("/tmp", "data") : defaultDataDir;
 const appointmentsPath = path.join(dataDir, "appointments.json");
 const leadsPath = path.join(dataDir, "leads.json");
 const settingsPath = path.join(dataDir, "settings.json");
@@ -26,7 +28,21 @@ function atomicWriteJson(filePath, data) {
 }
 
 function loadJson(filePath, fallback) {
-  if (!fs.existsSync(filePath)) return fallback;
+  if (!fs.existsSync(filePath)) {
+    // If running on Vercel and file is not in /tmp yet, check default project data dir
+    if (isVercel) {
+      const baseName = path.basename(filePath);
+      const seedPath = path.join(defaultDataDir, baseName);
+      if (fs.existsSync(seedPath)) {
+        try {
+          return JSON.parse(fs.readFileSync(seedPath, "utf8"));
+        } catch {
+          return fallback;
+        }
+      }
+    }
+    return fallback;
+  }
   try {
     const raw = fs.readFileSync(filePath, "utf8");
     return JSON.parse(raw);
