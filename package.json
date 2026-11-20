@@ -1,0 +1,25 @@
+{
+  "name": "amazing-smile-dental-care",
+  "version": "1.0.0",
+  "description": "Production Web Architecture and Backend for Amazing Smile Dental Care Ulhasnagar",
+  "main": "server/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "test": "node --test test/*.test.js"
+  },
+  "keywords": [
+    "dental-clinic",
+    "appointment-booking",
+    "healthcare-security",
+    "ulhasnagar"
+  ],
+  "author": "Craftvale",
+  "license": "ISC",
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}
