@@ -223,25 +223,31 @@ app.patch("/api/leads/:id", auth.requireAdmin, (req, res) => {
 });
 
 app.get("/api/settings", (_req, res) => {
-  const settings = {
-    clinicPhone: db.getSetting("clinicPhone") || process.env.CLINIC_PHONE || "+919975999529",
-    clinicWhatsapp: db.getSetting("clinicWhatsapp") || "919975999529",
-    clinicHours: db.getSetting("clinicHours") || "Mon–Sat: 10:00 AM–1:30 PM & 5:00 PM–9:30 PM",
-    clinicAddress: db.getSetting("clinicAddress") || "Gol Maidan, Sidhi Vinayak Nagar, Ulhasnagar - 421002",
-    announcementNotice: db.getSetting("announcementNotice") || "★ 4.8 Rating on Google Maps (100+ Verified Patient Reviews)",
-  };
+  const settings = db.getAllSettings();
   res.json({ ok: true, settings });
 });
 
 app.put("/api/settings", auth.requireAdmin, (req, res) => {
   const updates = req.body || {};
-  const allowed = ["clinicPhone", "clinicWhatsapp", "clinicHours", "clinicAddress", "announcementNotice"];
-  for (const key of allowed) {
-    if (key in updates && typeof updates[key] === "string") {
-      db.setSetting(key, updates[key].trim());
-    }
+  const saved = db.updateAllSettings(updates);
+  res.json({ ok: true, message: "Website customization settings saved successfully", settings: saved });
+});
+
+app.get("/api/export", auth.requireAdmin, (_req, res) => {
+  const backup = db.getFullBackup();
+  res.setHeader("Content-Disposition", 'attachment; filename="amazing-smile-backup.json"');
+  res.setHeader("Content-Type", "application/json");
+  res.json(backup);
+});
+
+app.post("/api/import", auth.requireAdmin, (req, res) => {
+  try {
+    const data = req.body || {};
+    db.restoreFullBackup(data);
+    res.json({ ok: true, message: "Data restored successfully" });
+  } catch (err) {
+    res.status(400).json({ error: "Failed to restore backup: " + err.message });
   }
-  res.json({ ok: true, message: "Settings saved successfully", settings: updates });
 });
 
 app.get("/admin", (_req, res) => {

@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initWhatsAppBookingForms();
   initGalleryLightbox();
   initImageGuard();
+  initDynamicSettings();
 });
 
 /* --- 1. Navbar Glass & Mobile Drawer --- */
@@ -731,4 +732,106 @@ function initCalScheduler() {
     renderCalendar();
     renderSlots();
   });
+}
+
+/* --- 10. Live Dynamic Settings & Offers Hydration --- */
+async function initDynamicSettings() {
+  try {
+    const res = await fetch('/api/settings');
+    if (!res.ok) return;
+    const { settings } = await res.json();
+    if (!settings) return;
+
+    // 1. Phone number hydration
+    if (settings.clinicPhone) {
+      const cleanDigits = settings.clinicPhone.replace(/\s+/g, '');
+      document.querySelectorAll('a[href^="tel:"]').forEach(el => {
+        el.href = `tel:${cleanDigits}`;
+        if (el.textContent.includes('9975999529') || el.classList.contains('btn-phone') || el.classList.contains('btn-call')) {
+          const icon = el.querySelector('svg');
+          if (icon) {
+            el.innerHTML = '';
+            el.appendChild(icon);
+            el.appendChild(document.createTextNode(' ' + settings.clinicPhone));
+          } else {
+            el.textContent = settings.clinicPhone;
+          }
+        }
+      });
+    }
+
+    // 2. WhatsApp numbers hydration
+    if (settings.clinicWhatsapp) {
+      document.querySelectorAll('a[href*="wa.me"]').forEach(el => {
+        try {
+          const url = new URL(el.href);
+          const textParam = url.searchParams.get('text') || '';
+          el.href = `https://wa.me/${settings.clinicWhatsapp}${textParam ? '?text=' + encodeURIComponent(textParam) : ''}`;
+        } catch (_) {}
+      });
+    }
+
+    // 3. Operating hours hydration
+    if (settings.hoursWeekdays) {
+      document.querySelectorAll('.top-bar-item').forEach(el => {
+        if (el.textContent.includes('Mon–Sat') || el.textContent.includes('10:00 AM')) {
+          const icon = el.querySelector('svg');
+          if (icon) {
+            el.innerHTML = '';
+            el.appendChild(icon);
+            el.appendChild(document.createTextNode(' ' + settings.hoursWeekdays));
+          } else {
+            el.textContent = settings.hoursWeekdays;
+          }
+        }
+      });
+    }
+
+    // 4. Top Announcement bar
+    const topBarRating = document.querySelector('.top-bar-rating span');
+    if (topBarRating && settings.announcementNotice) {
+      topBarRating.textContent = settings.announcementNotice;
+    }
+    const topBar = document.querySelector('.top-bar');
+    if (topBar && settings.showAnnouncementNotice === false) {
+      topBar.style.display = 'none';
+    }
+
+    // 5. Emergency Holiday Notice Banner
+    if (settings.holidayNoticeActive && settings.holidayNoticeText) {
+      let holidayBanner = document.getElementById('clinic-holiday-banner');
+      if (!holidayBanner) {
+        holidayBanner = document.createElement('div');
+        holidayBanner.id = 'clinic-holiday-banner';
+        holidayBanner.style.cssText = 'background: linear-gradient(90deg, #DC2626 0%, #B91C1C 100%); color: #FFFFFF; text-align: center; padding: 10px 20px; font-weight: 600; font-size: 14px; position: sticky; top: 0; z-index: 9999; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);';
+        document.body.prepend(holidayBanner);
+      }
+      holidayBanner.innerHTML = `⚠️ <strong>Notice:</strong> ${settings.holidayNoticeText}`;
+    }
+
+    // 6. Promotional Special Offer Banner
+    if (settings.offerActive && settings.offerShowAsBanner) {
+      let offerBanner = document.getElementById('clinic-offer-banner');
+      if (!offerBanner) {
+        offerBanner = document.createElement('div');
+        offerBanner.id = 'clinic-offer-banner';
+        offerBanner.style.cssText = 'background: linear-gradient(135deg, #079ED8 0%, #101D3A 100%); color: #FFFFFF; padding: 12px 24px; text-align: center; font-size: 14px; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; box-shadow: 0 4px 15px rgba(7, 158, 216, 0.2);';
+        const topBarEl = document.querySelector('.top-bar');
+        if (topBarEl && topBarEl.nextSibling) {
+          topBarEl.parentNode.insertBefore(offerBanner, topBarEl.nextSibling);
+        } else {
+          document.body.prepend(offerBanner);
+        }
+      }
+      const waDigits = settings.clinicWhatsapp || '919975999529';
+      const offerMsg = encodeURIComponent(`Hi Dr. Manish, I would like to claim the special offer: ${settings.offerTitle} (${settings.offerCode || 'SMILE20'})`);
+      offerBanner.innerHTML = `
+        <span style="background: rgba(255,196,0,0.25); border: 1px solid #FFC400; color: #FFC400; font-size: 11px; font-weight: 800; padding: 3px 10px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.05em;">${settings.offerBadge || 'LIMITED OFFER'}</span>
+        <span><strong>${settings.offerTitle || 'Special Dental Offer'}</strong>: ${settings.offerDescription || ''} (${settings.offerDiscount || ''})</span>
+        <a href="https://wa.me/${waDigits}?text=${offerMsg}" target="_blank" style="background: #16C784; color: #FFFFFF; text-decoration: none; padding: 5px 14px; border-radius: 999px; font-weight: 700; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
+          ${settings.offerCtaText || 'Claim Offer'} →
+        </a>
+      `;
+    }
+  } catch (_) {}
 }

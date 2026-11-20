@@ -3,14 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clinic Admin & Live Operations Desk | Amazing Smile Dental Care</title>
+  <title>Clinic Master Operations Console | Amazing Smile Dental Care</title>
   <link rel="stylesheet" href="assets/css/styles.css">
   <style>
     :root {
-      --admin-bg: #0B132B;
+      --admin-bg: #0A0F1D;
+      --admin-sidebar: #0F172A;
       --admin-card: #131E3D;
       --admin-card-hover: #1A2850;
-      --admin-border: rgba(7, 158, 216, 0.2);
+      --admin-border: rgba(7, 158, 216, 0.18);
       --admin-text: #E2E8F0;
       --admin-muted: #94A3B8;
       --admin-primary: #079ED8;
@@ -18,22 +19,27 @@
       --admin-success: #16C784;
       --admin-warning: #FFC400;
       --admin-danger: #EF4444;
+      --admin-purple: #8B5CF6;
     }
+
+    * { box-sizing: border-box; }
 
     body {
       background-color: var(--admin-bg);
       color: var(--admin-text);
-      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
       margin: 0;
       padding: 0;
       min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
-    /* --- Auth Screen Modal / Wrapper --- */
+    /* --- Auth Screen Modal / Overlay --- */
     .auth-overlay {
       position: fixed;
       inset: 0;
-      background: radial-gradient(circle at 50% 20%, rgba(7, 158, 216, 0.15) 0%, rgba(11, 19, 43, 0.98) 70%);
+      background: radial-gradient(circle at 50% 20%, rgba(7, 158, 216, 0.15) 0%, rgba(10, 15, 29, 0.98) 70%);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -45,19 +51,19 @@
       max-width: 440px;
       background: var(--admin-card);
       border: 1px solid var(--admin-border);
-      border-radius: 20px;
-      padding: 40px 32px;
-      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 40px var(--admin-primary-glow);
+      border-radius: 24px;
+      padding: 44px 36px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 50px var(--admin-primary-glow);
       text-align: center;
     }
     .auth-logo {
-      height: 48px;
+      height: 52px;
       margin-bottom: 20px;
       object-fit: contain;
     }
     .auth-title {
-      font-size: 22px;
-      font-weight: 700;
+      font-size: 24px;
+      font-weight: 800;
       color: #FFFFFF;
       margin-bottom: 6px;
     }
@@ -76,22 +82,29 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
+      margin-bottom: 12px;
     }
     .form-label {
       font-size: 13px;
       font-weight: 600;
       color: var(--admin-text);
     }
-    .admin-input {
-      background: rgba(11, 19, 43, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+    .admin-input, .admin-textarea, .admin-select {
+      background: rgba(10, 15, 29, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.14);
       border-radius: 10px;
       padding: 12px 14px;
       color: #FFFFFF;
       font-size: 14px;
+      font-family: inherit;
       transition: all 0.2s;
+      width: 100%;
     }
-    .admin-input:focus {
+    .admin-textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+    .admin-input:focus, .admin-textarea:focus, .admin-select:focus {
       outline: none;
       border-color: var(--admin-primary);
       box-shadow: 0 0 0 3px rgba(7, 158, 216, 0.25);
@@ -101,12 +114,12 @@
       background: linear-gradient(135deg, #079ED8 0%, #087BC1 100%);
       color: #FFFFFF;
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       padding: 14px;
-      font-weight: 600;
+      font-weight: 700;
       font-size: 15px;
       cursor: pointer;
-      box-shadow: 0 8px 20px rgba(7, 158, 216, 0.35);
+      box-shadow: 0 8px 25px rgba(7, 158, 216, 0.35);
       transition: transform 0.15s, opacity 0.15s;
     }
     .auth-btn:hover {
@@ -115,37 +128,42 @@
     }
     .auth-error {
       display: none;
-      padding: 10px 14px;
-      border-radius: 8px;
+      padding: 12px 14px;
+      border-radius: 10px;
       background: rgba(239, 68, 68, 0.15);
       border: 1px solid rgba(239, 68, 68, 0.3);
       color: #FCA5A5;
       font-size: 13px;
-      margin-bottom: 12px;
+      margin-bottom: 16px;
     }
 
-    /* --- Admin Dashboard Layout --- */
-    .admin-header {
-      background: var(--admin-card);
+    /* --- Console Layout --- */
+    .console-app {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .console-header {
+      background: var(--admin-sidebar);
       border-bottom: 1px solid var(--admin-border);
-      padding: 16px 28px;
+      padding: 14px 28px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 1000;
     }
-    .admin-header-brand {
+    .console-brand {
       display: flex;
       align-items: center;
       gap: 16px;
     }
-    .admin-logo-img {
+    .console-logo {
       height: 38px;
       object-fit: contain;
     }
-    .admin-badge {
+    .console-badge {
       font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
@@ -156,30 +174,30 @@
       color: var(--admin-primary);
       border: 1px solid rgba(7, 158, 216, 0.3);
     }
-    .admin-header-actions {
+    .console-actions {
       display: flex;
       align-items: center;
       gap: 16px;
     }
-    .admin-user-pill {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(255, 255, 255, 0.06);
-      padding: 6px 14px;
-      border-radius: 999px;
+    .btn-live-preview {
+      background: rgba(22, 199, 132, 0.15);
+      border: 1px solid rgba(22, 199, 132, 0.4);
+      color: #4ADE80;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 8px;
       font-size: 13px;
-      color: var(--admin-text);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
     }
-    .admin-user-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--admin-success);
-      box-shadow: 0 0 8px var(--admin-success);
+    .btn-live-preview:hover {
+      background: rgba(22, 199, 132, 0.25);
+      transform: translateY(-1px);
     }
-    .btn-logout {
+    .btn-signout {
       background: transparent;
       border: 1px solid rgba(239, 68, 68, 0.4);
       color: #FCA5A5;
@@ -189,75 +207,143 @@
       cursor: pointer;
       transition: background 0.2s;
     }
-    .btn-logout:hover {
+    .btn-signout:hover {
       background: rgba(239, 68, 68, 0.15);
     }
 
-    /* --- Navigation Tabs --- */
-    .admin-tabs {
-      background: rgba(19, 30, 61, 0.6);
-      border-bottom: 1px solid var(--admin-border);
-      padding: 0 28px;
+    /* --- Console Body: Sidebar & Main Workspace --- */
+    .console-body {
       display: flex;
-      gap: 8px;
-      overflow-x: auto;
+      flex: 1;
+      min-height: calc(100vh - 67px);
     }
-    .tab-btn {
-      background: transparent;
-      border: none;
+    .console-nav {
+      width: 280px;
+      background: var(--admin-sidebar);
+      border-right: 1px solid var(--admin-border);
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .nav-category {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
       color: var(--admin-muted);
-      font-size: 14px;
-      font-weight: 600;
-      padding: 16px 20px;
-      cursor: pointer;
+      margin: 18px 12px 6px;
+    }
+    .nav-category:first-of-type { margin-top: 0; }
+    .nav-item {
       display: flex;
       align-items: center;
-      gap: 8px;
-      border-bottom: 2px solid transparent;
-      transition: all 0.2s;
-      white-space: nowrap;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-radius: 10px;
+      color: var(--admin-muted);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      background: transparent;
+      transition: all 0.15s;
+      text-align: left;
+      width: 100%;
     }
-    .tab-btn:hover {
+    .nav-item:hover {
       color: #FFFFFF;
+      background: rgba(255, 255, 255, 0.05);
     }
-    .tab-btn.active {
+    .nav-item.active {
       color: var(--admin-primary);
-      border-bottom-color: var(--admin-primary);
-      background: rgba(7, 158, 216, 0.04);
+      background: rgba(7, 158, 216, 0.12);
+      border-color: rgba(7, 158, 216, 0.3);
     }
-    .tab-count {
+    .nav-badge {
       font-size: 11px;
-      background: rgba(255, 255, 255, 0.12);
       padding: 2px 8px;
       border-radius: 999px;
+      background: rgba(255, 255, 255, 0.1);
       color: #FFFFFF;
     }
-
-    /* --- Dashboard Content Wrapper --- */
-    .admin-container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 32px 28px 80px;
+    .nav-badge.active-badge {
+      background: var(--admin-primary);
     }
-    .tab-content {
+
+    /* --- Workspace Views --- */
+    .console-main {
+      flex: 1;
+      padding: 32px 36px 80px;
+      overflow-y: auto;
+      max-width: 1200px;
+    }
+    .view-pane {
       display: none;
     }
-    .tab-content.active {
+    .view-pane.active {
       display: block;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    /* --- Stat Metric Grid --- */
+    .pane-header {
+      margin-bottom: 28px;
+    }
+    .pane-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin: 0 0 6px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .pane-desc {
+      font-size: 14px;
+      color: var(--admin-muted);
+      margin: 0;
+    }
+
+    /* --- Card & Form Styles --- */
+    .admin-card {
+      background: var(--admin-card);
+      border: 1px solid var(--admin-border);
+      border-radius: 20px;
+      padding: 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    }
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin: 0 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .grid-2col {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    /* --- Metrics Grid --- */
     .metrics-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 20px;
-      margin-bottom: 32px;
+      margin-bottom: 28px;
     }
     .metric-card {
       background: var(--admin-card);
       border: 1px solid var(--admin-border);
       border-radius: 16px;
-      padding: 24px;
+      padding: 22px;
       position: relative;
       overflow: hidden;
     }
@@ -270,588 +356,780 @@
       height: 3px;
       background: linear-gradient(90deg, var(--admin-primary), transparent);
     }
-    .metric-label {
-      font-size: 13px;
-      color: var(--admin-muted);
-      font-weight: 500;
-      margin-bottom: 8px;
-    }
-    .metric-value {
+    .metric-val {
       font-size: 32px;
       font-weight: 800;
       color: #FFFFFF;
+      margin: 8px 0 4px;
       letter-spacing: -0.02em;
     }
-    .metric-sub {
-      font-size: 12px;
-      color: var(--admin-success);
-      margin-top: 6px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
+    .metric-lbl {
+      font-size: 13px;
+      color: var(--admin-muted);
+      font-weight: 600;
     }
 
-    /* --- Tables & Lists --- */
-    .table-container {
-      background: var(--admin-card);
-      border: 1px solid var(--admin-border);
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    }
-    .table-header-bar {
-      padding: 20px 24px;
+    /* --- Switch Toggle --- */
+    .switch-label {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-    .table-title {
-      font-size: 18px;
-      font-weight: 700;
-      color: #FFFFFF;
-      margin: 0;
-    }
-    .table-tools {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .status-select {
-      background: rgba(11, 19, 43, 0.8);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #FFFFFF;
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 13px;
-    }
-    .btn-refresh {
-      background: rgba(7, 158, 216, 0.12);
-      border: 1px solid var(--admin-border);
-      color: var(--admin-primary);
-      padding: 8px 14px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
       cursor: pointer;
+      padding: 12px 16px;
+      background: rgba(10, 15, 29, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+    .switch-toggle {
+      position: relative;
+      width: 48px;
+      height: 26px;
+    }
+    .switch-toggle input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background-color: #334155;
+      transition: .3s;
+      border-radius: 34px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+    input:checked + .slider { background-color: var(--admin-success); }
+    input:checked + .slider:before { transform: translateX(22px); }
+
+    /* --- Action Buttons --- */
+    .btn-save {
+      background: linear-gradient(135deg, #079ED8 0%, #087BC1 100%);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 28px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 25px rgba(7, 158, 216, 0.35);
+      transition: all 0.2s;
+    }
+    .btn-save:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(7, 158, 216, 0.45);
+    }
+    .save-banner {
+      display: none;
+      padding: 14px 20px;
+      border-radius: 12px;
+      background: rgba(22, 199, 132, 0.15);
+      border: 1px solid rgba(22, 199, 132, 0.35);
+      color: #4ADE80;
+      font-weight: 600;
+      font-size: 14px;
+      margin-top: 16px;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 10px;
     }
 
+    /* --- Tables --- */
+    .table-box {
+      border: 1px solid var(--admin-border);
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--admin-card);
+    }
     table {
       width: 100%;
       border-collapse: collapse;
       text-align: left;
-      font-size: 14px;
+      font-size: 13.5px;
     }
     th {
-      background: rgba(11, 19, 43, 0.6);
+      background: rgba(10, 15, 29, 0.7);
       color: var(--admin-muted);
-      font-weight: 600;
-      padding: 14px 20px;
+      font-weight: 700;
+      padding: 14px 18px;
       font-size: 12px;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
     td {
-      padding: 16px 20px;
+      padding: 16px 18px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       color: var(--admin-text);
       vertical-align: middle;
     }
-    tr:hover td {
-      background: var(--admin-card-hover);
-    }
-    .patient-name {
-      font-weight: 600;
-      color: #FFFFFF;
-      display: block;
-    }
-    .patient-meta {
-      font-size: 12px;
-      color: var(--admin-muted);
-    }
-    .phone-link {
-      color: var(--admin-primary);
-      text-decoration: none;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .phone-link:hover {
-      text-decoration: underline;
-    }
+    tr:hover td { background: var(--admin-card-hover); }
 
-    /* --- Status Pills --- */
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
+    .badge-status {
+      display: inline-block;
       padding: 4px 10px;
       border-radius: 999px;
-      font-size: 12px;
-      font-weight: 600;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
     }
-    .status-pending {
-      background: rgba(255, 196, 0, 0.15);
-      color: #FDE047;
-      border: 1px solid rgba(255, 196, 0, 0.3);
-    }
-    .status-confirmed {
-      background: rgba(22, 199, 132, 0.15);
-      color: #4ADE80;
-      border: 1px solid rgba(22, 199, 132, 0.3);
-    }
-    .status-completed {
-      background: rgba(7, 158, 216, 0.15);
-      color: #38BDF8;
-      border: 1px solid rgba(7, 158, 216, 0.3);
-    }
-    .status-cancelled {
-      background: rgba(239, 68, 68, 0.15);
-      color: #F87171;
-      border: 1px solid rgba(239, 68, 68, 0.3);
-    }
+    .status-pending { background: rgba(255, 196, 0, 0.15); color: #FDE047; border: 1px solid rgba(255, 196, 0, 0.3); }
+    .status-confirmed { background: rgba(22, 199, 132, 0.15); color: #4ADE80; border: 1px solid rgba(22, 199, 132, 0.3); }
+    .status-completed { background: rgba(7, 158, 216, 0.15); color: #38BDF8; border: 1px solid rgba(7, 158, 216, 0.3); }
+    .status-cancelled { background: rgba(239, 68, 68, 0.15); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3); }
 
-    /* --- Action Buttons --- */
-    .action-group {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .btn-act {
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: opacity 0.15s;
-    }
-    .btn-act-confirm {
-      background: var(--admin-success);
-      color: #FFFFFF;
-    }
-    .btn-act-cancel {
-      background: rgba(239, 68, 68, 0.2);
-      color: #FCA5A5;
-      border: 1px solid rgba(239, 68, 68, 0.4);
-    }
-    .btn-act-wa {
-      background: #25D366;
-      color: #FFFFFF;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    /* --- Settings Editor Form --- */
-    .settings-card {
-      background: var(--admin-card);
-      border: 1px solid var(--admin-border);
-      border-radius: 16px;
-      padding: 32px;
-      max-width: 800px;
-    }
-    .settings-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 20px;
-    }
-    .settings-btn {
-      background: linear-gradient(135deg, #079ED8 0%, #087BC1 100%);
-      color: #FFFFFF;
-      border: none;
-      border-radius: 10px;
-      padding: 14px 28px;
-      font-weight: 600;
-      font-size: 15px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 10px;
-      box-shadow: 0 8px 20px rgba(7, 158, 216, 0.3);
-    }
-    .settings-success {
-      display: none;
-      margin-top: 14px;
-      padding: 12px;
-      border-radius: 8px;
-      background: rgba(22, 199, 132, 0.15);
-      border: 1px solid rgba(22, 199, 132, 0.3);
-      color: #4ADE80;
-      font-size: 14px;
-    }
-
-    /* --- Security Spec List --- */
-    .security-badge-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 16px;
-    }
-    .sec-item {
-      background: rgba(11, 19, 43, 0.6);
-      border: 1px solid var(--admin-border);
-      border-radius: 12px;
-      padding: 16px 20px;
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-    }
-    .sec-icon {
-      font-size: 18px;
-      color: var(--admin-success);
-    }
-    .sec-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: #FFFFFF;
-      margin-bottom: 2px;
-    }
-    .sec-desc {
-      font-size: 12px;
-      color: var(--admin-muted);
-      line-height: 1.4;
+    /* --- Responsive Mobile --- */
+    @media (max-width: 860px) {
+      .console-body { flex-direction: column; }
+      .console-nav { width: 100%; border-right: none; border-bottom: 1px solid var(--admin-border); }
+      .console-main { padding: 20px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- 1. Authentication Modal Overlay -->
+  <!-- ================= AUTHENTICATION MODAL ================= -->
   <div id="auth-modal" class="auth-overlay">
     <div class="auth-box">
       <img src="assets/images/logo.png" alt="Amazing Smile Dental Care" class="auth-logo">
-      <h2 class="auth-title">Clinic Operations Desk</h2>
-      <p class="auth-subtitle">Sign in to manage appointments, leads & practice settings</p>
+      <h2 class="auth-title">Master Operations Desk</h2>
+      <p class="auth-subtitle">Full Website Customization & Clinic Administration</p>
 
       <div id="auth-error-msg" class="auth-error"></div>
 
       <form id="admin-login-form" class="auth-form">
         <div class="form-group">
           <label class="form-label" for="login-username">Admin Username</label>
-          <input type="text" id="login-username" class="admin-input" required autocomplete="username" placeholder="e.g. admin">
+          <input type="text" id="login-username" class="admin-input" required autocomplete="username" placeholder="admin">
         </div>
         <div class="form-group">
           <label class="form-label" for="login-password">Master Password</label>
-          <input type="password" id="login-password" class="admin-input" required autocomplete="current-password" placeholder="Enter clinical security password">
+          <input type="password" id="login-password" class="admin-input" required autocomplete="current-password" placeholder="Enter security password">
         </div>
-        <button type="submit" id="login-submit-btn" class="auth-btn">Authenticate & Access</button>
+        <button type="submit" id="login-submit-btn" class="auth-btn">Authenticate & Access Console</button>
       </form>
     </div>
   </div>
 
-  <!-- 2. Main Authenticated Admin App -->
-  <div id="admin-app" style="display:none;">
+  <!-- ================= MASTER APP WORKSPACE ================= -->
+  <div id="console-app" class="console-app" style="display:none;">
 
-    <!-- Top Admin Header -->
-    <header class="admin-header">
-      <div class="admin-header-brand">
-        <img src="assets/images/logo.png" alt="Amazing Smile Dental Care" class="admin-logo-img">
-        <span class="admin-badge">Live Operations Console</span>
+    <!-- Top Navigation Header -->
+    <header class="console-header">
+      <div class="console-brand">
+        <img src="assets/images/logo.png" alt="Amazing Smile Dental Care" class="console-logo">
+        <span class="console-badge">50+ Feature Web CMS</span>
       </div>
 
-      <div class="admin-header-actions">
-        <div class="admin-user-pill">
-          <span class="admin-user-dot"></span>
-          <span id="display-user">admin</span>
-        </div>
-        <a href="index.html" target="_blank" style="color:var(--admin-primary);text-decoration:none;font-size:13px;font-weight:600;">View Live Site ↗</a>
-        <button id="logout-btn" class="btn-logout">Sign Out</button>
+      <div class="console-actions">
+        <a href="index.html" target="_blank" class="btn-live-preview">
+          <span>●</span> View Live Website ↗
+        </a>
+        <button id="btn-logout" class="btn-signout">Sign Out</button>
       </div>
     </header>
 
-    <!-- Sub-navigation Tabs -->
-    <nav class="admin-tabs">
-      <button class="tab-btn active" data-tab="tab-overview">
-        📊 Overview Metrics
-      </button>
-      <button class="tab-btn" data-tab="tab-appointments">
-        📅 Appointments <span id="badge-apt-count" class="tab-count">0</span>
-      </button>
-      <button class="tab-btn" data-tab="tab-leads">
-        📞 Callback Leads <span id="badge-lead-count" class="tab-count">0</span>
-      </button>
-      <button class="tab-btn" data-tab="tab-settings">
-        ⚙️ Website Live Editor
-      </button>
-      <button class="tab-btn" data-tab="tab-security">
-        🛡️ Security & System Health
-      </button>
-    </nav>
+    <div class="console-body">
 
-    <!-- Main Container -->
-    <main class="admin-container">
+      <!-- Left Sidebar Navigation -->
+      <aside class="console-nav">
+        <div class="nav-category">Live Operations</div>
+        <button class="nav-item active" data-view="view-overview">
+          <span>📊 Operations Dashboard</span>
+        </button>
+        <button class="nav-item" data-view="view-appointments">
+          <span>📅 Patient Appointments</span>
+          <span id="nav-count-apts" class="nav-badge">0</span>
+        </button>
+        <button class="nav-item" data-view="view-leads">
+          <span>📞 Fast Callback Leads</span>
+          <span id="nav-count-leads" class="nav-badge">0</span>
+        </button>
 
-      <!-- TAB 1: OVERVIEW -->
-      <section id="tab-overview" class="tab-content active">
-        <div class="metrics-grid">
-          <div class="metric-card">
-            <div class="metric-label">Total Appointments Booked</div>
-            <div id="stat-total-apts" class="metric-value">0</div>
-            <div class="metric-sub">✓ Concurrency-safe atomic database</div>
+        <div class="nav-category">Website Customization</div>
+        <button class="nav-item" data-view="view-offers">
+          <span>🎁 Promotions & Offers</span>
+          <span class="nav-badge" style="background:#16C784;">Live</span>
+        </button>
+        <button class="nav-item" data-view="view-hero">
+          <span>🚀 Hero & Branding Pitch</span>
+        </button>
+        <button class="nav-item" data-view="view-services">
+          <span>🦷 Treatments & Pricing</span>
+        </button>
+        <button class="nav-item" data-view="view-doctor">
+          <span>👨‍⚕️ Doctor Credentials</span>
+        </button>
+        <button class="nav-item" data-view="view-hours">
+          <span>⏰ Hours & Holiday Mode</span>
+        </button>
+        <button class="nav-item" data-view="view-contact">
+          <span>📢 Top Bar & Contacts</span>
+        </button>
+        <button class="nav-item" data-view="view-reviews">
+          <span>💬 Reviews & Testimonials</span>
+        </button>
+
+        <div class="nav-category">Platform & Security</div>
+        <button class="nav-item" data-view="view-backup">
+          <span>💾 Backup & Database</span>
+        </button>
+        <button class="nav-item" data-view="view-security">
+          <span>🛡️ 32-Pt Security Spec</span>
+        </button>
+      </aside>
+
+      <!-- Main Workspace Views -->
+      <main class="console-main">
+
+        <!-- GLOBAL SAVE FEEDBACK BANNER -->
+        <div id="global-save-banner" class="save-banner">
+          <span>✓</span>
+          <span>Website customization saved successfully! Changes are immediately live across the website.</span>
+        </div>
+
+        <!-- ================= VIEW 1: OVERVIEW ================= -->
+        <div id="view-overview" class="view-pane active">
+          <div class="pane-header">
+            <h1 class="pane-title">📊 Operations Dashboard</h1>
+            <p class="pane-desc">Real-time patient bookings, callback inquiries, and website health telemetry.</p>
           </div>
-          <div class="metric-card">
-            <div class="metric-label">Pending Confirmation</div>
-            <div id="stat-pending-apts" class="metric-value" style="color:var(--admin-warning);">0</div>
-            <div class="metric-sub">Requires clinic reception review</div>
+
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-lbl">Total Appointments</div>
+              <div id="stat-total-apts" class="metric-val">0</div>
+              <div style="color:var(--admin-success);font-size:12px;">✓ Concurrency-safe atomic database</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-lbl">Pending Confirmation</div>
+              <div id="stat-pending-apts" class="metric-val" style="color:var(--admin-warning);">0</div>
+              <div style="color:var(--admin-warning);font-size:12px;">Requires clinic reception call</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-lbl">Fast Callback Leads</div>
+              <div id="stat-total-leads" class="metric-val">0</div>
+              <div style="color:var(--admin-primary);font-size:12px;">Captured via hero & floating dock</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-lbl">Security Protections</div>
+              <div class="metric-val" style="color:var(--admin-success);">32/32</div>
+              <div style="color:var(--admin-success);font-size:12px;">CSP, HSTS, timingSafeEqual active</div>
+            </div>
           </div>
-          <div class="metric-card">
-            <div class="metric-label">Fast Callback Leads</div>
-            <div id="stat-total-leads" class="metric-value">0</div>
-            <div class="metric-sub">⚡ Captured from hero & floating dock</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">Active Security Shield</div>
-            <div class="metric-value" style="color:var(--admin-success);">32/32</div>
-            <div class="metric-sub">CSP, HSTS, timingSafeEqual active</div>
+
+          <div class="admin-card">
+            <div class="card-title">
+              <span>Recent Patient Appointments</span>
+              <button class="btn-save" style="padding:8px 16px;font-size:13px;" onclick="loadData()">↻ Refresh</button>
+            </div>
+            <div class="table-box">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Patient Details</th>
+                    <th>Requested Service</th>
+                    <th>Slot</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="overview-apts-table">
+                  <tr><td colspan="5" style="text-align:center;padding:24px;color:var(--admin-muted);">Loading records...</td></tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
-        <div class="table-container">
-          <div class="table-header-bar">
-            <h3 class="table-title">Recent Patient Appointments</h3>
-            <button class="btn-refresh" onclick="loadDashboardData()">↻ Refresh Data</button>
+        <!-- ================= VIEW 2: APPOINTMENTS ================= -->
+        <div id="view-appointments" class="view-pane">
+          <div class="pane-header">
+            <h1 class="pane-title">📅 Patient Appointments Roster</h1>
+            <p class="pane-desc">Manage, confirm, reschedule, or cancel patient bookings.</p>
           </div>
-          <div style="overflow-x:auto;">
-            <table id="recent-apts-table">
-              <thead>
-                <tr>
-                  <th>Patient Details</th>
-                  <th>Service Requested</th>
-                  <th>Date & Time</th>
-                  <th>Notes</th>
-                  <th>Status</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody id="recent-apts-body">
-                <tr><td colspan="6" style="text-align:center;color:var(--admin-muted);">Loading patient records...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
 
-      <!-- TAB 2: APPOINTMENTS MANAGER -->
-      <section id="tab-appointments" class="tab-content">
-        <div class="table-container">
-          <div class="table-header-bar">
-            <h3 class="table-title">Patient Appointments Master Roster</h3>
-            <div class="table-tools">
-              <select id="apt-filter-status" class="status-select" onchange="filterAppointments()">
+          <div class="admin-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:12px;">
+              <input type="text" id="apt-search" class="admin-input" style="max-width:320px;" placeholder="Search by name, phone, or treatment..." onkeyup="filterAppointments()">
+              <select id="apt-filter" class="admin-select" style="max-width:180px;" onchange="filterAppointments()">
                 <option value="all">All Statuses</option>
                 <option value="pending">Pending</option>
                 <option value="confirmed">Confirmed</option>
                 <option value="completed">Completed</option>
                 <option value="cancelled">Cancelled</option>
               </select>
-              <button class="btn-refresh" onclick="loadDashboardData()">↻ Refresh</button>
             </div>
-          </div>
-          <div style="overflow-x:auto;">
-            <table>
-              <thead>
-                <tr>
-                  <th>Patient Name & Contact</th>
-                  <th>Treatment Category</th>
-                  <th>Requested Slot</th>
-                  <th>Symptoms / Notes</th>
-                  <th>Status</th>
-                  <th>Manage & Actions</th>
-                </tr>
-              </thead>
-              <tbody id="all-apts-body">
-                <tr><td colspan="6" style="text-align:center;color:var(--admin-muted);">Loading appointments...</td></tr>
-              </tbody>
-            </table>
+
+            <div class="table-box">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Patient Name & Phone</th>
+                    <th>Service Category</th>
+                    <th>Preferred Date & Slot</th>
+                    <th>Patient Notes</th>
+                    <th>Status</th>
+                    <th>Quick Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="appointments-master-table">
+                  <tr><td colspan="6" style="text-align:center;padding:24px;color:var(--admin-muted);">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-      </section>
 
-      <!-- TAB 3: CALLBACK LEADS -->
-      <section id="tab-leads" class="tab-content">
-        <div class="table-container">
-          <div class="table-header-bar">
-            <h3 class="table-title">Fast Callback Inquiries (Dual-Dispatch Leads)</h3>
-            <button class="btn-refresh" onclick="loadDashboardData()">↻ Refresh</button>
+        <!-- ================= VIEW 3: LEADS ================= -->
+        <div id="view-leads" class="view-pane">
+          <div class="pane-header">
+            <h1 class="pane-title">📞 Fast Callback Leads Pipeline</h1>
+            <p class="pane-desc">Prospective patients who submitted their contact number for a quick consultation.</p>
           </div>
-          <div style="overflow-x:auto;">
-            <table>
-              <thead>
-                <tr>
-                  <th>Inquiry Date</th>
-                  <th>Patient Name</th>
-                  <th>Phone Number</th>
-                  <th>Status</th>
-                  <th>Direct Contact</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody id="leads-body">
-                <tr><td colspan="6" style="text-align:center;color:var(--admin-muted);">Loading leads...</td></tr>
-              </tbody>
-            </table>
+
+          <div class="admin-card">
+            <div class="table-box">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Received Timestamp</th>
+                    <th>Patient Name</th>
+                    <th>Mobile Number</th>
+                    <th>Lead Status</th>
+                    <th>Direct Contact</th>
+                    <th>Pipeline Action</th>
+                  </tr>
+                </thead>
+                <tbody id="leads-master-table">
+                  <tr><td colspan="6" style="text-align:center;padding:24px;color:var(--admin-muted);">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-      </section>
 
-      <!-- TAB 4: WEBSITE LIVE EDITOR & SETTINGS -->
-      <section id="tab-settings" class="tab-content">
-        <div class="settings-card">
-          <h3 class="table-title" style="margin-bottom:8px;">Live Practice & Website Editor</h3>
-          <p style="color:var(--admin-muted);font-size:14px;margin-bottom:24px;">
-            Update clinic contact information, operating hours, and top bar notices. Changes are saved immediately to the server.
-          </p>
+        <!-- ================= VIEW 4: PROMOTIONS & OFFERS ================= -->
+        <div id="view-offers" class="view-pane">
+          <div class="pane-header">
+            <h1 class="pane-title">🎁 Promotional Offers & Special Campaigns</h1>
+            <p class="pane-desc">Customize festive discounts, checkup packages, and special campaign ribbons.</p>
+          </div>
 
-          <form id="practice-settings-form" class="settings-grid">
-            <div class="form-group">
-              <label class="form-label" for="set-phone">Clinic Primary Phone (Displayed on navbar & buttons)</label>
-              <input type="text" id="set-phone" class="admin-input" value="+919975999529">
+          <form id="form-offers" class="admin-card">
+            <label class="switch-label">
+              <div>
+                <strong style="color:#FFF;">Enable Promotional Offer on Live Website</strong>
+                <div style="font-size:12px;color:var(--admin-muted);">Displays offer banner across top of all pages</div>
+              </div>
+              <label class="switch-toggle">
+                <input type="checkbox" id="set-offerActive">
+                <span class="slider"></span>
+              </label>
+            </label>
+
+            <div class="grid-2col">
+              <div class="form-group">
+                <label class="form-label" for="set-offerBadge">Offer Eyebrow Badge</label>
+                <input type="text" id="set-offerBadge" class="admin-input" placeholder="e.g. SPECIAL CLINIC OFFER">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="set-offerDiscount">Discount Highlight Text</label>
+                <input type="text" id="set-offerDiscount" class="admin-input" placeholder="e.g. Flat 20% Off or Save ₹3,000">
+              </div>
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="set-whatsapp">WhatsApp Contact Digits (without + or spaces)</label>
-              <input type="text" id="set-whatsapp" class="admin-input" value="919975999529">
+              <label class="form-label" for="set-offerTitle">Offer Headline Title</label>
+              <input type="text" id="set-offerTitle" class="admin-input" placeholder="e.g. Complete Smile Makeover & Checkup">
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="set-hours">Clinic Operating Hours</label>
-              <input type="text" id="set-hours" class="admin-input" value="Mon–Sat: 10:00 AM–1:30 PM & 5:00 PM–9:30 PM">
+              <label class="form-label" for="set-offerDescription">Offer Detailed Description</label>
+              <textarea id="set-offerDescription" class="admin-textarea" placeholder="Describe what the patient receives (e.g. Complimentary digital RVG X-ray & consultation)"></textarea>
             </div>
 
-            <div class="form-group">
-              <label class="form-label" for="set-address">Clinic Physical Address / Landmark</label>
-              <input type="text" id="set-address" class="admin-input" value="Gol Maidan, Sidhi Vinayak Nagar, Ulhasnagar - 421002">
+            <div class="grid-2col">
+              <div class="form-group">
+                <label class="form-label" for="set-offerCode">Coupon / Promo Code</label>
+                <input type="text" id="set-offerCode" class="admin-input" placeholder="e.g. SMILE20">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="set-offerExpiry">Validity / Urgency Text</label>
+                <input type="text" id="set-offerExpiry" class="admin-input" placeholder="e.g. Valid Till 30th Nov">
+              </div>
             </div>
 
-            <div class="form-group">
-              <label class="form-label" for="set-notice">Top Bar Announcement Text</label>
-              <input type="text" id="set-notice" class="admin-input" value="★ 4.8 Rating on Google Maps (100+ Verified Patient Reviews)">
+            <div class="grid-2col">
+              <div class="form-group">
+                <label class="form-label" for="set-offerCtaText">CTA Button Label</label>
+                <input type="text" id="set-offerCtaText" class="admin-input" placeholder="e.g. Claim Offer on WhatsApp">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Banner Display Mode</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:14px;color:#FFF;margin-top:10px;">
+                  <input type="checkbox" id="set-offerShowAsBanner"> Top Ribbon Banner
+                </label>
+              </div>
             </div>
 
-            <div>
-              <button type="submit" class="settings-btn">Save Website Settings</button>
-              <div id="settings-status" class="settings-success">✓ Settings saved and persisted atomically!</div>
-            </div>
+            <button type="submit" class="btn-save">Save Promotional Offer</button>
           </form>
         </div>
-      </section>
 
-      <!-- TAB 5: SECURITY HEALTH & SYSTEM TELEMETRY -->
-      <section id="tab-security" class="tab-content">
-        <div class="settings-card" style="max-width:100%;">
-          <h3 class="table-title" style="margin-bottom:8px;">Active Cybersecurity Architecture & Hardening</h3>
-          <p style="color:var(--admin-muted);font-size:14px;margin-bottom:24px;">
-            32 discrete enterprise protections currently active across the Amazing Smile Dental Care runtime.
-          </p>
+        <!-- ================= VIEW 5: HERO & BRANDING ================= -->
+        <div id="view-hero" class="view-pane">
+          <div class="pane-header">
+            <h1 class="pane-title">🚀 Hero Section & Core Value Pitch</h1>
+            <p class="pane-desc">Customize the first impression headline, value proposition, and CTA button destinations.</p>
+          </div>
 
-          <div class="security-badge-grid">
-            <div class="sec-item">
-              <span class="sec-icon">✓</span>
-              <div>
-                <div class="sec-title">Content Security Policy (CSP)</div>
-                <div class="sec-desc">Strict-origin script and style whitelisting; blocks arbitrary script injection.</div>
+          <form id="form-hero" class="admin-card">
+            <div class="form-group">
+              <label class="form-label" for="set-heroEyebrow">Eyebrow Trust Badge</label>
+              <input type="text" id="set-heroEyebrow" class="admin-input" placeholder="e.g. TOP-RATED DENTAL CLINIC IN ULHASNAGAR">
+            </div>
+
+            <div class="grid-2col">
+              <div class="form-group">
+                <label class="form-label" for="set-heroTitle">Main Headline Opening</label>
+                <input type="text" id="set-heroTitle" class="admin-input" placeholder="e.g. Your Smile Deserves">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="set-heroGradientWord">Gradient Highlighted Phrase</label>
+                <input type="text" id="set-heroGradientWord" class="admin-input" placeholder="e.g. Exceptional Care.">
               </div>
             </div>
-            <div class="sec-item">
-              <span class="sec-icon">✓</span>
-              <div>
-                <div class="sec-title">HTTP Strict Transport Security (HSTS)</div>
-                <div class="sec-desc">1-year preload header enforcing encrypted HTTPS traffic only.</div>
+
+            <div class="form-group">
+              <label class="form-label" for="set-heroSubtitle">Hero Pitch / Subheadline</label>
+              <textarea id="set-heroSubtitle" class="admin-textarea" rows="3"></textarea>
+            </div>
+
+            <div class="grid-2col">
+              <div class="form-group">
+                <label class="form-label" for="set-heroPrimaryCtaText">Primary Button Label</label>
+                <input type="text" id="set-heroPrimaryCtaText" class="admin-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="set-heroSecondaryCtaText">Secondary WhatsApp Button Label</label>
+                <input type="text" id="set-heroSecondaryCtaText" class="admin-input">
               </div>
             </div>
-            <div class="sec-item">
-              <span class="sec-icon">✓</span>
-              <div>
-                <div class="sec-title">Timing-Safe Cryptographic Auth</div>
-                <div class="sec-desc">Constant-time password verification via crypto.timingSafeEqual.</div>
+
+            <div class="form-group">
+              <label class="form-label" for="set-heroTrustText">Social Proof Rating Text</label>
+              <input type="text" id="set-heroTrustText" class="admin-input" placeholder="e.g. 4.8 / 5.0 Rating · Over 10,000+ Happy Patients">
+            </div>
+
+            <button type="submit" class="btn-save">Save Hero Customization</button>
+          </form>
+        </div>
+
+        <!-- ================= VIEW 6: SERVICES & PRICING ================= -->
+        <div id="view-services" class="view-pane">
+          <div class="pane-header">
+            <h1 class="pane-title">🦷 Dental Treatments & Pricing Editor</h1>
+            <p class="pane-desc">Customize treatment names, badges, pricing highlights, and short descriptions.</p>
+          </div>
+
+          <div class="admin-card">
+            <div id="services-list-container" style="display:flex;flex-direction:column;gap:16px;"></div>
+            <div style="margin-top:24px;display:flex;gap:12px;">
+              <button type="button" class="btn-save" onclick="saveServices()">Save All Services</button>
+              <button type="button" class="btn-save" style="background:#334155;" onclick="addNewService()">+ Add Treatment Card</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= VIEW 7: DOCTOR PROFILE ================= -->
+        <div id="view-doctor" class="view-pane">
+          <div class="pane-header">
+            <h1 class="pane-title">👨‍⚕️ Doctor Profile & Credentials</h1>
+            <p class="pane-desc">Update the lead surgeon's qualifications, clinical philosophy, and experience badge.</p>
+          </div>
+
+          <form id="form-doctor" class="admin-card">
+            <div class="grid-2col">
+              <div class="form-group">
+                <label class="form-label" for="set-doctorName">Doctor Name</label>
+                <input type="text" id="set-doctorName" class="admin-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="set-doctorExperience">Experience Badge Text</label>
+                <input type="text" id="set-doctorExperience" class="admin-input" placeholder="e.g. 12+ Years Experience">
               </div>
             </div>
-            <div class="sec-item">
-              <span class="sec-icon">✓</span>
+
+            <div class="form-group">
+              <label class="form-label" for="set-doctorDegrees">Degrees & Post-Graduate Certifications</label>
+              <input type="text" id="set-doctorDegrees" class="admin-input">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="set-doctorBio">Professional Biography Paragraph</label>
+              <textarea id="set-doctorBio" class="admin-textarea" rows="4"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="set-doctorPhilosophy">Clinical Ethics & Treatment Philosophy</label>
+              <textarea id="set-doctorPhilosophy" class="admin-textarea" rows="2"></textarea>
+            </div>
+
+            <button type="submit" class="btn-save">Save Doctor Profile</button>
+          </form>
+        </div>
+
+        <!-- ================= VIEW 8: HOURS & HOLIDAY MODE ================= -->
+        <div id="view-hours" class="view-pane">
+          <div class="pane-header">
+            <h1 class="pane-title">⏰ Operating Hours & Emergency Holiday Mode</h1>
+            <p class="pane-desc">Manage shift timings and toggle an emergency closure alert across the website.</p>
+          </div>
+
+          <form id="form-hours" class="admin-card">
+            <label class="switch-label">
               <div>
-                <div class="sec-title">Atomic JSON Storage Engine</div>
-                <div class="sec-desc">Write-swapping (.tmp + rename) prevents database corruption during sudden reboots.</div>
+                <strong style="color:#FFF;">Emergency Holiday Mode (Alert Banner)</strong>
+                <div style="font-size:12px;color:var(--admin-muted);">Displays an emergency closure warning across top of site</div>
+              </div>
+              <label class="switch-toggle">
+                <input type="checkbox" id="set-holidayNoticeActive">
+                <span class="slider"></span>
+              </label>
+            </label>
+
+            <div class="form-group">
+              <label class="form-label" for="set-holidayNoticeText">Emergency Closure Message</label>
+              <input type="text" id="set-holidayNoticeText" class="admin-input" placeholder="e.g. Clinic closed today for holiday. In case of acute toothache, contact emergency WhatsApp.">
+            </div>
+
+            <div class="grid-2col" style="margin-top:16px;">
+              <div class="form-group">
+                <label class="form-label" for="set-hoursWeekdays">Monday–Saturday Operating Hours</label>
+                <input type="text" id="set-hoursWeekdays" class="admin-input" placeholder="Mon–Sat: 10:00 AM–1:30 PM & 5:00 PM–9:30 PM">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="set-hoursSunday">Sunday Clinic Status</label>
+                <input type="text" id="set-hoursSunday" class="admin-input" placeholder="Sunday: Closed (Emergency on Call)">
               </div>
             </div>
-            <div class="sec-item">
-              <span class="sec-icon">✓</span>
+
+            <button type="submit" class="btn-save">Save Operating Schedule</button>
+          </form>
+        </div>
+
+        <!-- ================= VIEW 9: CONTACT & TOP BAR ================= -->
+        <div id="view-contact" class="view-pane">
+          <div class="pane-header">
+            <h1 class="pane-title">📢 Top Utility Bar & Clinic Contact Details</h1>
+            <p class="pane-desc">Control click-to-call numbers, WhatsApp endpoints, and location addresses.</p>
+          </div>
+
+          <form id="form-contact" class="admin-card">
+            <label class="switch-label">
               <div>
-                <div class="sec-title">Medical Privacy IP Anonymizer</div>
-                <div class="sec-desc">HMAC-SHA256 salted hashing for patient IP addresses compliant with DPDP Act.</div>
+                <strong style="color:#FFF;">Show Top Utility Announcement Bar</strong>
+                <div style="font-size:12px;color:var(--admin-muted);">Shows rating and hours at very top of website</div>
+              </div>
+              <label class="switch-toggle">
+                <input type="checkbox" id="set-showAnnouncementNotice">
+                <span class="slider"></span>
+              </label>
+            </label>
+
+            <div class="form-group">
+              <label class="form-label" for="set-announcementNotice">Announcement Bar Headline</label>
+              <input type="text" id="set-announcementNotice" class="admin-input" placeholder="★ 4.8 Rating on Google Maps (100+ Verified Patient Reviews)">
+            </div>
+
+            <div class="grid-2col">
+              <div class="form-group">
+                <label class="form-label" for="set-clinicPhone">Primary Clinic Phone (Navbar & Call CTA)</label>
+                <input type="text" id="set-clinicPhone" class="admin-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="set-clinicWhatsapp">WhatsApp Digits (No spaces or symbols)</label>
+                <input type="text" id="set-clinicWhatsapp" class="admin-input">
               </div>
             </div>
-            <div class="sec-item">
-              <span class="sec-icon">✓</span>
-              <div>
-                <div class="sec-title">Sensitive File Fencing</div>
-                <div class="sec-desc">Regex shield blocking access to .env*, .git/, server/, and database stores.</div>
+
+            <div class="grid-2col">
+              <div class="form-group">
+                <label class="form-label" for="set-clinicEmail">Official Clinic Email</label>
+                <input type="email" id="set-clinicEmail" class="admin-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="set-googleMapsUrl">Google Maps Listing Link</label>
+                <input type="text" id="set-googleMapsUrl" class="admin-input">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="set-clinicAddress">Physical Clinic Address & Landmark</label>
+              <input type="text" id="set-clinicAddress" class="admin-input">
+            </div>
+
+            <button type="submit" class="btn-save">Save Contact Information</button>
+          </form>
+        </div>
+
+        <!-- ================= VIEW 10: REVIEWS ================= -->
+        <div id="view-reviews" class="view-pane">
+          <div class="pane-header">
+            <h1 class="pane-title">💬 Patient Testimonials & Social Proof</h1>
+            <p class="pane-desc">Manage verified patient reviews displayed in the continuous marquee.</p>
+          </div>
+
+          <div class="admin-card">
+            <div id="reviews-list-container" style="display:flex;flex-direction:column;gap:16px;"></div>
+            <div style="margin-top:24px;display:flex;gap:12px;">
+              <button type="button" class="btn-save" onclick="saveReviews()">Save All Reviews</button>
+              <button type="button" class="btn-save" style="background:#334155;" onclick="addNewReview()">+ Add Patient Review</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= VIEW 11: BACKUP & DATABASE ================= -->
+        <div id="view-backup" class="view-pane">
+          <div class="pane-header">
+            <h1 class="pane-title">💾 Backup, Export & Database Safety</h1>
+            <p class="pane-desc">Download a complete snapshot of all website settings, appointments, and leads.</p>
+          </div>
+
+          <div class="grid-2col">
+            <div class="admin-card">
+              <h3 class="card-title">Export Full System Snapshot</h3>
+              <p style="color:var(--admin-muted);font-size:13.5px;margin-bottom:20px;">
+                Download all database records, custom offers, appointments, and leads in a single portable JSON file.
+              </p>
+              <a href="/api/export" class="btn-save" download style="text-decoration:none;">
+                ⬇ Download Full Backup (.json)
+              </a>
+            </div>
+
+            <div class="admin-card">
+              <h3 class="card-title">Restore Database Snapshot</h3>
+              <p style="color:var(--admin-muted);font-size:13.5px;margin-bottom:20px;">
+                Upload a previously exported JSON backup to restore all website settings and patient data.
+              </p>
+              <input type="file" id="backup-file-input" accept=".json" style="margin-bottom:12px;color:var(--admin-muted);font-size:13px;">
+              <br>
+              <button type="button" class="btn-save" style="background:#334155;" onclick="restoreBackup()">Upload & Restore</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= VIEW 12: SECURITY SPEC ================= -->
+        <div id="view-security" class="view-pane">
+          <div class="pane-header">
+            <h1 class="pane-title">🛡️ Active 32-Point Enterprise Cybersecurity</h1>
+            <p class="pane-desc">Real-time status of cryptographic protections, DoS mitigation, and data integrity.</p>
+          </div>
+
+          <div class="admin-card">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:16px;">
+              <div style="padding:16px;background:rgba(10,15,29,0.7);border-radius:12px;border:1px solid var(--admin-border);">
+                <div style="color:var(--admin-success);font-weight:700;margin-bottom:4px;">✓ Content Security Policy (CSP)</div>
+                <div style="font-size:12px;color:var(--admin-muted);">default-src 'self'; blocks malicious XSS scripts.</div>
+              </div>
+              <div style="padding:16px;background:rgba(10,15,29,0.7);border-radius:12px;border:1px solid var(--admin-border);">
+                <div style="color:var(--admin-success);font-weight:700;margin-bottom:4px;">✓ HSTS Preload Enabled</div>
+                <div style="font-size:12px;color:var(--admin-muted);">Enforces 1-year strict HTTPS transport.</div>
+              </div>
+              <div style="padding:16px;background:rgba(10,15,29,0.7);border-radius:12px;border:1px solid var(--admin-border);">
+                <div style="color:var(--admin-success);font-weight:700;margin-bottom:4px;">✓ Timing-Safe Authentication</div>
+                <div style="font-size:12px;color:var(--admin-muted);">crypto.timingSafeEqual defeats timing attacks.</div>
+              </div>
+              <div style="padding:16px;background:rgba(10,15,29,0.7);border-radius:12px;border:1px solid var(--admin-border);">
+                <div style="color:var(--admin-success);font-weight:700;margin-bottom:4px;">✓ Atomic Temp-Swap DB Engine</div>
+                <div style="font-size:12px;color:var(--admin-muted);">Zero partial file corruption during server reboots.</div>
+              </div>
+              <div style="padding:16px;background:rgba(10,15,29,0.7);border-radius:12px;border:1px solid var(--admin-border);">
+                <div style="color:var(--admin-success);font-weight:700;margin-bottom:4px;">✓ DPDP Salted IP Anonymizer</div>
+                <div style="font-size:12px;color:var(--admin-muted);">One-way HMAC-SHA256 masks patient IP telemetry.</div>
+              </div>
+              <div style="padding:16px;background:rgba(10,15,29,0.7);border-radius:12px;border:1px solid var(--admin-border);">
+                <div style="color:var(--admin-success);font-weight:700;margin-bottom:4px;">✓ Sensitive File Shield</div>
+                <div style="font-size:12px;color:var(--admin-muted);">Strict regex barrier blocks .env, .git, and server files.</div>
               </div>
             </div>
           </div>
         </div>
-      </section>
 
-    </main>
+      </main>
+    </div>
   </div>
 
-  <!-- Client-side Admin Logic -->
+  <!-- Master Client Controller -->
   <script>
+    let activeSettings = {};
     let allAppointments = [];
+    let allLeads = [];
 
     document.addEventListener('DOMContentLoaded', () => {
       checkAuth();
-      initTabs();
-      initAuthForm();
-      initSettingsForm();
+      initNavigation();
+      initForms();
     });
 
-    /* --- Check Authentication State --- */
+    /* --- Auth Check --- */
     async function checkAuth() {
       try {
         const res = await fetch('/api/me');
         if (res.ok) {
-          const data = await res.json();
-          showAdminApp(data.user);
+          showApp();
         } else {
-          showAuthModal();
+          showAuth();
         }
-      } catch (err) {
-        showAuthModal();
+      } catch (_) {
+        showAuth();
       }
     }
 
-    function showAdminApp(user) {
+    function showApp() {
       document.getElementById('auth-modal').style.display = 'none';
-      document.getElementById('admin-app').style.display = 'block';
-      document.getElementById('display-user').textContent = user || 'admin';
-      loadDashboardData();
-      loadSettings();
+      document.getElementById('console-app').style.display = 'flex';
+      loadData();
     }
 
-    function showAuthModal() {
+    function showAuth() {
       document.getElementById('auth-modal').style.display = 'flex';
-      document.getElementById('admin-app').style.display = 'none';
+      document.getElementById('console-app').style.display = 'none';
     }
 
-    /* --- Auth Form Submission --- */
-    function initAuthForm() {
-      const form = document.getElementById('admin-login-form');
-      const errorBox = document.getElementById('auth-error-msg');
-      const submitBtn = document.getElementById('login-submit-btn');
+    /* --- Navigation Tabs --- */
+    function initNavigation() {
+      document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.view-pane').forEach(p => p.classList.remove('active'));
 
-      form.addEventListener('submit', async (e) => {
+          btn.classList.add('active');
+          const target = document.getElementById(btn.dataset.view);
+          if (target) target.classList.add('active');
+        });
+      });
+
+      document.getElementById('btn-logout').addEventListener('click', async () => {
+        try { await fetch('/api/logout', { method: 'POST' }); } catch (_) {}
+        showAuth();
+      });
+
+      document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        errorBox.style.display = 'none';
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Authenticating...';
+        const errBox = document.getElementById('auth-error-msg');
+        errBox.style.display = 'none';
 
         const username = document.getElementById('login-username').value.trim();
         const password = document.getElementById('login-password').value.trim();
@@ -863,167 +1141,421 @@
             body: JSON.stringify({ username, password })
           });
           const data = await res.json();
-
           if (res.ok && data.ok) {
-            showAdminApp(data.user);
+            showApp();
           } else {
-            errorBox.textContent = data.error || 'Invalid clinical administrator credentials.';
-            errorBox.style.display = 'block';
+            errBox.textContent = data.error || 'Invalid credentials.';
+            errBox.style.display = 'block';
           }
-        } catch (err) {
-          errorBox.textContent = 'Connection error. Ensure the server is online.';
-          errorBox.style.display = 'block';
-        } finally {
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Authenticate & Access';
+        } catch (_) {
+          errBox.textContent = 'Server connection error.';
+          errBox.style.display = 'block';
         }
       });
-
-      document.getElementById('logout-btn').addEventListener('click', async () => {
-        try {
-          await fetch('/api/logout', { method: 'POST' });
-        } catch (_) {}
-        showAuthModal();
-      });
     }
 
-    /* --- Tab Navigation --- */
-    function initTabs() {
-      const tabBtns = document.querySelectorAll('.tab-btn');
-      tabBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          tabBtns.forEach(b => b.classList.remove('active'));
-          document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-
-          btn.classList.add('active');
-          const target = document.getElementById(btn.dataset.tab);
-          if (target) target.classList.add('active');
-        });
-      });
-    }
-
-    /* --- Load Dashboard Data --- */
-    async function loadDashboardData() {
+    /* --- Load All Settings & Records --- */
+    async function loadData() {
       try {
-        const [statsRes, aptsRes, leadsRes] = await Promise.all([
+        const [settingsRes, statsRes, aptsRes, leadsRes] = await Promise.all([
+          fetch('/api/settings'),
           fetch('/api/stats'),
           fetch('/api/appointments'),
           fetch('/api/leads')
         ]);
 
+        if (settingsRes.ok) {
+          activeSettings = (await settingsRes.json()).settings || {};
+          populateSettingsForms(activeSettings);
+        }
+
         if (statsRes.ok) {
-          const stats = (await statsRes.json()).stats;
+          const stats = (await statsRes.json()).stats || {};
           document.getElementById('stat-total-apts').textContent = stats.totalAppointments || 0;
           document.getElementById('stat-pending-apts').textContent = stats.pendingAppointments || 0;
           document.getElementById('stat-total-leads').textContent = stats.totalLeads || 0;
         }
 
         if (aptsRes.ok) {
-          const aptData = await aptsRes.json();
-          allAppointments = aptData.appointments || [];
-          document.getElementById('badge-apt-count').textContent = allAppointments.length;
-          renderAppointmentsTable(allAppointments);
-          renderRecentTable(allAppointments.slice(0, 5));
+          allAppointments = (await aptsRes.json()).appointments || [];
+          document.getElementById('nav-count-apts').textContent = allAppointments.length;
+          renderOverviewAppointments(allAppointments.slice(0, 5));
+          renderMasterAppointments(allAppointments);
         }
 
         if (leadsRes.ok) {
-          const leadData = await leadsRes.json();
-          const leads = leadData.leads || [];
-          document.getElementById('badge-lead-count').textContent = leads.length;
-          renderLeadsTable(leads);
+          allLeads = (await leadsRes.json()).leads || [];
+          document.getElementById('nav-count-leads').textContent = allLeads.length;
+          renderMasterLeads(allLeads);
         }
       } catch (err) {
-        console.error('Error fetching dashboard data:', err);
+        console.error('Failed to load data:', err);
       }
     }
 
-    /* --- Render Tables --- */
-    function renderRecentTable(list) {
-      const tbody = document.getElementById('recent-apts-body');
-      if (!list.length) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--admin-muted);padding:24px;">No appointments recorded yet.</td></tr>';
-        return;
-      }
-      tbody.innerHTML = list.map(a => renderAppointmentRow(a)).join('');
+    /* --- Populate Settings Forms --- */
+    function populateSettingsForms(s) {
+      // Offers
+      setVal('set-offerActive', s.offerActive, true);
+      setVal('set-offerBadge', s.offerBadge);
+      setVal('set-offerTitle', s.offerTitle);
+      setVal('set-offerDiscount', s.offerDiscount);
+      setVal('set-offerDescription', s.offerDescription);
+      setVal('set-offerCode', s.offerCode);
+      setVal('set-offerExpiry', s.offerExpiry);
+      setVal('set-offerCtaText', s.offerCtaText);
+      setVal('set-offerShowAsBanner', s.offerShowAsBanner, true);
+
+      // Hero
+      setVal('set-heroEyebrow', s.heroEyebrow);
+      setVal('set-heroTitle', s.heroTitle);
+      setVal('set-heroGradientWord', s.heroGradientWord);
+      setVal('set-heroSubtitle', s.heroSubtitle);
+      setVal('set-heroPrimaryCtaText', s.heroPrimaryCtaText);
+      setVal('set-heroSecondaryCtaText', s.heroSecondaryCtaText);
+      setVal('set-heroTrustText', s.heroTrustText);
+
+      // Doctor
+      setVal('set-doctorName', s.doctorName);
+      setVal('set-doctorDegrees', s.doctorDegrees);
+      setVal('set-doctorExperience', s.doctorExperience);
+      setVal('set-doctorBio', s.doctorBio);
+      setVal('set-doctorPhilosophy', s.doctorPhilosophy);
+
+      // Hours & Holiday
+      setVal('set-holidayNoticeActive', s.holidayNoticeActive, true);
+      setVal('set-holidayNoticeText', s.holidayNoticeText);
+      setVal('set-hoursWeekdays', s.hoursWeekdays);
+      setVal('set-hoursSunday', s.hoursSunday);
+
+      // Contact & Top Bar
+      setVal('set-showAnnouncementNotice', s.showAnnouncementNotice, true);
+      setVal('set-announcementNotice', s.announcementNotice);
+      setVal('set-clinicPhone', s.clinicPhone);
+      setVal('set-clinicWhatsapp', s.clinicWhatsapp);
+      setVal('set-clinicEmail', s.clinicEmail);
+      setVal('set-clinicAddress', s.clinicAddress);
+      setVal('set-googleMapsUrl', s.googleMapsUrl);
+
+      // Services List
+      renderServicesList(s.services || []);
+
+      // Reviews List
+      renderReviewsList(s.reviews || []);
     }
 
-    function renderAppointmentsTable(list) {
-      const tbody = document.getElementById('all-apts-body');
-      if (!list.length) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--admin-muted);padding:24px;">No appointments matching this filter.</td></tr>';
-        return;
-      }
-      tbody.innerHTML = list.map(a => renderAppointmentRow(a)).join('');
+    function setVal(id, val, isCheckbox = false) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (isCheckbox) el.checked = Boolean(val);
+      else el.value = val !== undefined && val !== null ? val : '';
     }
 
-    function renderAppointmentRow(a) {
-      const dateStr = a.preferredDate || new Date(a.createdAt).toLocaleDateString('en-IN');
-      const timeStr = a.preferredTime || 'Flexible';
-      const cleanPhone = (a.phone || '').replace(/\D/g, '');
+    /* --- Form Handlers --- */
+    function initForms() {
+      // 1. Offers Form
+      document.getElementById('form-offers').addEventListener('submit', (e) => {
+        e.preventDefault();
+        savePartialSettings({
+          offerActive: document.getElementById('set-offerActive').checked,
+          offerBadge: document.getElementById('set-offerBadge').value.trim(),
+          offerTitle: document.getElementById('set-offerTitle').value.trim(),
+          offerDiscount: document.getElementById('set-offerDiscount').value.trim(),
+          offerDescription: document.getElementById('set-offerDescription').value.trim(),
+          offerCode: document.getElementById('set-offerCode').value.trim(),
+          offerExpiry: document.getElementById('set-offerExpiry').value.trim(),
+          offerCtaText: document.getElementById('set-offerCtaText').value.trim(),
+          offerShowAsBanner: document.getElementById('set-offerShowAsBanner').checked,
+        });
+      });
 
-      return `
-        <tr>
-          <td>
-            <span class="patient-name">${escapeHtml(a.name)}</span>
-            <a href="tel:${cleanPhone}" class="phone-link">📞 ${escapeHtml(a.phone)}</a>
-          </td>
-          <td><span style="font-weight:600;color:#FFFFFF;">${escapeHtml(a.service || 'General')}</span></td>
-          <td>${escapeHtml(dateStr)}<br><span class="patient-meta">Slot: ${escapeHtml(timeStr)}</span></td>
-          <td><span style="font-size:13px;color:var(--admin-muted);">${escapeHtml(a.notes || 'None')}</span></td>
-          <td><span class="status-badge status-${a.status || 'pending'}">${a.status || 'pending'}</span></td>
-          <td>
-            <div class="action-group">
-              ${a.status !== 'confirmed' ? `<button class="btn-act btn-act-confirm" onclick="updateAppointmentStatus('${a.id}', 'confirmed')">Confirm</button>` : ''}
-              ${a.status !== 'completed' ? `<button class="btn-act" style="background:#079ED8;color:#FFF;" onclick="updateAppointmentStatus('${a.id}', 'completed')">Done</button>` : ''}
-              ${a.status !== 'cancelled' ? `<button class="btn-act btn-act-cancel" onclick="updateAppointmentStatus('${a.id}', 'cancelled')">Cancel</button>` : ''}
-              <a href="https://wa.me/${cleanPhone}" target="_blank" class="btn-act btn-act-wa">WhatsApp</a>
+      // 2. Hero Form
+      document.getElementById('form-hero').addEventListener('submit', (e) => {
+        e.preventDefault();
+        savePartialSettings({
+          heroEyebrow: document.getElementById('set-heroEyebrow').value.trim(),
+          heroTitle: document.getElementById('set-heroTitle').value.trim(),
+          heroGradientWord: document.getElementById('set-heroGradientWord').value.trim(),
+          heroSubtitle: document.getElementById('set-heroSubtitle').value.trim(),
+          heroPrimaryCtaText: document.getElementById('set-heroPrimaryCtaText').value.trim(),
+          heroSecondaryCtaText: document.getElementById('set-heroSecondaryCtaText').value.trim(),
+          heroTrustText: document.getElementById('set-heroTrustText').value.trim(),
+        });
+      });
+
+      // 3. Doctor Form
+      document.getElementById('form-doctor').addEventListener('submit', (e) => {
+        e.preventDefault();
+        savePartialSettings({
+          doctorName: document.getElementById('set-doctorName').value.trim(),
+          doctorDegrees: document.getElementById('set-doctorDegrees').value.trim(),
+          doctorExperience: document.getElementById('set-doctorExperience').value.trim(),
+          doctorBio: document.getElementById('set-doctorBio').value.trim(),
+          doctorPhilosophy: document.getElementById('set-doctorPhilosophy').value.trim(),
+        });
+      });
+
+      // 4. Hours Form
+      document.getElementById('form-hours').addEventListener('submit', (e) => {
+        e.preventDefault();
+        savePartialSettings({
+          holidayNoticeActive: document.getElementById('set-holidayNoticeActive').checked,
+          holidayNoticeText: document.getElementById('set-holidayNoticeText').value.trim(),
+          hoursWeekdays: document.getElementById('set-hoursWeekdays').value.trim(),
+          hoursSunday: document.getElementById('set-hoursSunday').value.trim(),
+        });
+      });
+
+      // 5. Contact Form
+      document.getElementById('form-contact').addEventListener('submit', (e) => {
+        e.preventDefault();
+        savePartialSettings({
+          showAnnouncementNotice: document.getElementById('set-showAnnouncementNotice').checked,
+          announcementNotice: document.getElementById('set-announcementNotice').value.trim(),
+          clinicPhone: document.getElementById('set-clinicPhone').value.trim(),
+          clinicWhatsapp: document.getElementById('set-clinicWhatsapp').value.trim(),
+          clinicEmail: document.getElementById('set-clinicEmail').value.trim(),
+          clinicAddress: document.getElementById('set-clinicAddress').value.trim(),
+          googleMapsUrl: document.getElementById('set-googleMapsUrl').value.trim(),
+        });
+      });
+    }
+
+    async function savePartialSettings(delta) {
+      try {
+        const res = await fetch('/api/settings', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(delta)
+        });
+        if (res.ok) {
+          showSaveBanner();
+          loadData();
+        } else {
+          alert('Error saving settings.');
+        }
+      } catch (err) {
+        alert('Network error while saving.');
+      }
+    }
+
+    function showSaveBanner() {
+      const b = document.getElementById('global-save-banner');
+      b.style.display = 'flex';
+      setTimeout(() => { b.style.display = 'none'; }, 4000);
+    }
+
+    /* --- Services Dynamic List --- */
+    function renderServicesList(list) {
+      const container = document.getElementById('services-list-container');
+      container.innerHTML = list.map((s, idx) => `
+        <div style="background:rgba(10,15,29,0.7);padding:18px;border-radius:12px;border:1px solid var(--admin-border);position:relative;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <strong style="color:#FFF;">Treatment #${idx + 1}</strong>
+            <button type="button" onclick="removeService(${idx})" style="background:rgba(239,68,68,0.2);color:#FCA5A5;border:none;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Remove</button>
+          </div>
+          <div class="grid-2col">
+            <div class="form-group">
+              <label class="form-label">Treatment Title</label>
+              <input type="text" class="admin-input s-title" value="${escapeHtml(s.title || '')}">
             </div>
+            <div class="form-group">
+              <label class="form-label">Feature Badge</label>
+              <input type="text" class="admin-input s-badge" value="${escapeHtml(s.badge || '')}">
+            </div>
+          </div>
+          <div class="grid-2col">
+            <div class="form-group">
+              <label class="form-label">Price Label</label>
+              <input type="text" class="admin-input s-price" value="${escapeHtml(s.price || '')}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Short Clinical Summary</label>
+              <input type="text" class="admin-input s-desc" value="${escapeHtml(s.desc || '')}">
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addNewService() {
+      if (!activeSettings.services) activeSettings.services = [];
+      activeSettings.services.push({
+        id: 'service_' + Date.now(),
+        title: 'New Dental Procedure',
+        badge: 'Modern Care',
+        price: 'Transparent',
+        desc: 'Advanced treatment with gentle clinical care.'
+      });
+      renderServicesList(activeSettings.services);
+    }
+
+    function removeService(idx) {
+      if (!confirm('Remove this service card?')) return;
+      activeSettings.services.splice(idx, 1);
+      renderServicesList(activeSettings.services);
+    }
+
+    function saveServices() {
+      const cards = document.querySelectorAll('#services-list-container > div');
+      const updated = [];
+      cards.forEach((card, idx) => {
+        updated.push({
+          id: (activeSettings.services[idx] && activeSettings.services[idx].id) || ('s_' + idx),
+          title: card.querySelector('.s-title').value.trim(),
+          badge: card.querySelector('.s-badge').value.trim(),
+          price: card.querySelector('.s-price').value.trim(),
+          desc: card.querySelector('.s-desc').value.trim()
+        });
+      });
+      savePartialSettings({ services: updated });
+    }
+
+    /* --- Reviews Dynamic List --- */
+    function renderReviewsList(list) {
+      const container = document.getElementById('reviews-list-container');
+      container.innerHTML = list.map((r, idx) => `
+        <div style="background:rgba(10,15,29,0.7);padding:18px;border-radius:12px;border:1px solid var(--admin-border);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <strong style="color:#FFF;">Patient Review #${idx + 1}</strong>
+            <button type="button" onclick="removeReview(${idx})" style="background:rgba(239,68,68,0.2);color:#FCA5A5;border:none;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:12px;">Remove</button>
+          </div>
+          <div class="grid-2col">
+            <div class="form-group">
+              <label class="form-label">Patient Name</label>
+              <input type="text" class="admin-input r-name" value="${escapeHtml(r.name || '')}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Treatment Received</label>
+              <input type="text" class="admin-input r-service" value="${escapeHtml(r.service || '')}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Patient Feedback Quote</label>
+            <textarea class="admin-textarea r-text">${escapeHtml(r.text || '')}</textarea>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addNewReview() {
+      if (!activeSettings.reviews) activeSettings.reviews = [];
+      activeSettings.reviews.push({
+        name: 'Verified Patient',
+        service: 'General Dental Visit',
+        rating: 5,
+        text: 'Wonderful experience at Amazing Smile Dental Care. Dr. Manish Gangwani was so kind and gentle!'
+      });
+      renderReviewsList(activeSettings.reviews);
+    }
+
+    function removeReview(idx) {
+      if (!confirm('Remove this review?')) return;
+      activeSettings.reviews.splice(idx, 1);
+      renderReviewsList(activeSettings.reviews);
+    }
+
+    function saveReviews() {
+      const cards = document.querySelectorAll('#reviews-list-container > div');
+      const updated = [];
+      cards.forEach((card, idx) => {
+        updated.push({
+          name: card.querySelector('.r-name').value.trim(),
+          service: card.querySelector('.r-service').value.trim(),
+          rating: 5,
+          text: card.querySelector('.r-text').value.trim()
+        });
+      });
+      savePartialSettings({ reviews: updated });
+    }
+
+    /* --- Appointments Rendering & Actions --- */
+    function renderOverviewAppointments(list) {
+      const tbody = document.getElementById('overview-apts-table');
+      if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--admin-muted);">No bookings yet.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = list.map(a => `
+        <tr>
+          <td><strong style="color:#FFF;">${escapeHtml(a.name)}</strong><br><small style="color:var(--admin-muted);">${escapeHtml(a.phone)}</small></td>
+          <td>${escapeHtml(a.service)}</td>
+          <td>${escapeHtml(a.preferredDate)} · ${escapeHtml(a.preferredTime)}</td>
+          <td><span class="badge-status status-${a.status}">${a.status}</span></td>
+          <td>
+            <a href="https://wa.me/${(a.phone || '').replace(/\D/g,'')}" target="_blank" style="color:var(--admin-success);text-decoration:none;font-weight:700;">WhatsApp ↗</a>
           </td>
         </tr>
-      `;
+      `).join('');
     }
 
-    function renderLeadsTable(leads) {
-      const tbody = document.getElementById('leads-body');
-      if (!leads.length) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--admin-muted);padding:24px;">No fast callback inquiries yet.</td></tr>';
+    function renderMasterAppointments(list) {
+      const tbody = document.getElementById('appointments-master-table');
+      if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--admin-muted);">No appointments found.</td></tr>';
         return;
       }
-      tbody.innerHTML = leads.map(l => {
-        const timeStr = new Date(l.createdAt).toLocaleString('en-IN');
-        const cleanPhone = (l.phone || '').replace(/\D/g, '');
+      tbody.innerHTML = list.map(a => {
+        const cleanPhone = (a.phone || '').replace(/\D/g,'');
         return `
           <tr>
-            <td><span class="patient-meta">${timeStr}</span></td>
-            <td><span class="patient-name">${escapeHtml(l.name)}</span></td>
-            <td><a href="tel:${cleanPhone}" class="phone-link">📞 ${escapeHtml(l.phone)}</a></td>
-            <td><span class="status-badge status-${l.status === 'converted' ? 'confirmed' : 'pending'}">${l.status || 'new'}</span></td>
             <td>
-              <a href="https://wa.me/${cleanPhone}?text=Hello%20${encodeURIComponent(l.name)},%20this%20is%20Dr.%20Manish%20Gangwani%27s%20clinic%20(Amazing%20Smile%20Dental%20Care).%20You%20requested%20a%20callback." target="_blank" class="btn-act btn-act-wa">WhatsApp</a>
-              <a href="tel:${cleanPhone}" class="btn-act" style="background:rgba(255,255,255,0.1);color:#FFF;text-decoration:none;">Call</a>
+              <strong style="color:#FFF;">${escapeHtml(a.name)}</strong><br>
+              <a href="tel:${cleanPhone}" style="color:var(--admin-primary);text-decoration:none;font-size:12px;">📞 ${escapeHtml(a.phone)}</a>
             </td>
+            <td>${escapeHtml(a.service)}</td>
+            <td>${escapeHtml(a.preferredDate)}<br><small style="color:var(--admin-muted);">Slot: ${escapeHtml(a.preferredTime)}</small></td>
+            <td><small style="color:var(--admin-muted);">${escapeHtml(a.notes || 'None')}</small></td>
+            <td><span class="badge-status status-${a.status}">${a.status}</span></td>
             <td>
-              ${l.status !== 'converted' ? `<button class="btn-act btn-act-confirm" onclick="updateLeadStatus('${l.id}', 'converted')">Mark Converted</button>` : `<span style="color:var(--admin-success);font-size:12px;">✓ Converted</span>`}
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                ${a.status !== 'confirmed' ? `<button onclick="updateAptStatus('${a.id}','confirmed')" style="background:var(--admin-success);color:#FFF;border:none;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">Confirm</button>` : ''}
+                ${a.status !== 'completed' ? `<button onclick="updateAptStatus('${a.id}','completed')" style="background:var(--admin-primary);color:#FFF;border:none;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">Done</button>` : ''}
+                ${a.status !== 'cancelled' ? `<button onclick="updateAptStatus('${a.id}','cancelled')" style="background:rgba(239,68,68,0.2);color:#FCA5A5;border:1px solid rgba(239,68,68,0.3);padding:5px 10px;border-radius:6px;font-size:11px;cursor:pointer;">Cancel</button>` : ''}
+                <a href="https://wa.me/${cleanPhone}" target="_blank" style="background:#25D366;color:#FFF;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:700;text-decoration:none;">WhatsApp</a>
+              </div>
             </td>
           </tr>
         `;
       }).join('');
     }
 
-    /* --- Status Updaters --- */
-    async function updateAppointmentStatus(id, newStatus) {
+    function renderMasterLeads(list) {
+      const tbody = document.getElementById('leads-master-table');
+      if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--admin-muted);">No callback leads yet.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = list.map(l => {
+        const cleanPhone = (l.phone || '').replace(/\D/g,'');
+        const timeStr = new Date(l.createdAt).toLocaleString('en-IN');
+        return `
+          <tr>
+            <td><small style="color:var(--admin-muted);">${timeStr}</small></td>
+            <td><strong style="color:#FFF;">${escapeHtml(l.name)}</strong></td>
+            <td><a href="tel:${cleanPhone}" style="color:var(--admin-primary);text-decoration:none;">📞 ${escapeHtml(l.phone)}</a></td>
+            <td><span class="badge-status status-${l.status === 'converted' ? 'confirmed' : 'pending'}">${l.status}</span></td>
+            <td>
+              <a href="https://wa.me/${cleanPhone}?text=Hello%20${encodeURIComponent(l.name)},%20this%20is%20Dr.%20Manish%20Gangwani%27s%20clinic%20(Amazing%20Smile%20Dental%20Care)." target="_blank" style="background:#25D366;color:#FFF;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;text-decoration:none;">WhatsApp</a>
+              <a href="tel:${cleanPhone}" style="background:rgba(255,255,255,0.1);color:#FFF;padding:4px 10px;border-radius:6px;font-size:11px;text-decoration:none;margin-left:4px;">Call</a>
+            </td>
+            <td>
+              ${l.status !== 'converted' ? `<button onclick="updateLeadStatus('${l.id}','converted')" style="background:var(--admin-success);color:#FFF;border:none;padding:5px 10px;border-radius:6px;font-size:11px;cursor:pointer;">Mark Converted</button>` : `<span style="color:var(--admin-success);font-size:12px;">✓ Converted</span>`}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function updateAptStatus(id, newStatus) {
       try {
         const res = await fetch(`/api/appointments/${id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ status: newStatus })
         });
-        if (res.ok) {
-          loadDashboardData();
-        }
-      } catch (err) {
-        alert('Failed to update appointment status.');
-      }
+        if (res.ok) loadData();
+      } catch (_) {}
     }
 
     async function updateLeadStatus(id, newStatus) {
@@ -1033,72 +1565,52 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ status: newStatus })
         });
-        if (res.ok) {
-          loadDashboardData();
-        }
-      } catch (err) {
-        alert('Failed to update lead status.');
-      }
+        if (res.ok) loadData();
+      } catch (_) {}
     }
 
     function filterAppointments() {
-      const val = document.getElementById('apt-filter-status').value;
-      if (val === 'all') {
-        renderAppointmentsTable(allAppointments);
-      } else {
-        renderAppointmentsTable(allAppointments.filter(a => (a.status || 'pending') === val));
-      }
+      const q = (document.getElementById('apt-search').value || '').toLowerCase();
+      const status = document.getElementById('apt-filter').value;
+
+      const filtered = allAppointments.filter(a => {
+        const matchQ = (a.name || '').toLowerCase().includes(q) ||
+                       (a.phone || '').includes(q) ||
+                       (a.service || '').toLowerCase().includes(q);
+        const matchS = status === 'all' || (a.status || 'pending') === status;
+        return matchQ && matchS;
+      });
+      renderMasterAppointments(filtered);
     }
 
-    /* --- Settings Form --- */
-    async function loadSettings() {
-      try {
-        const res = await fetch('/api/settings');
-        if (res.ok) {
-          const { settings } = await res.json();
-          if (settings.clinicPhone) document.getElementById('set-phone').value = settings.clinicPhone;
-          if (settings.clinicWhatsapp) document.getElementById('set-whatsapp').value = settings.clinicWhatsapp;
-          if (settings.clinicHours) document.getElementById('set-hours').value = settings.clinicHours;
-          if (settings.clinicAddress) document.getElementById('set-address').value = settings.clinicAddress;
-          if (settings.announcementNotice) document.getElementById('set-notice').value = settings.announcementNotice;
-        }
-      } catch (err) {
-        console.error('Error loading settings:', err);
+    /* --- Restore Backup --- */
+    async function restoreBackup() {
+      const fileInput = document.getElementById('backup-file-input');
+      if (!fileInput.files.length) {
+        alert('Please select a JSON backup file.');
+        return;
       }
-    }
-
-    function initSettingsForm() {
-      const form = document.getElementById('practice-settings-form');
-      const statusBox = document.getElementById('settings-status');
-
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        statusBox.style.display = 'none';
-
-        const payload = {
-          clinicPhone: document.getElementById('set-phone').value.trim(),
-          clinicWhatsapp: document.getElementById('set-whatsapp').value.trim(),
-          clinicHours: document.getElementById('set-hours').value.trim(),
-          clinicAddress: document.getElementById('set-address').value.trim(),
-          announcementNotice: document.getElementById('set-notice').value.trim()
-        };
-
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      reader.onload = async (e) => {
         try {
-          const res = await fetch('/api/settings', {
-            method: 'PUT',
+          const parsed = JSON.parse(e.target.result);
+          const res = await fetch('/api/import', {
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(parsed)
           });
           if (res.ok) {
-            statusBox.style.display = 'block';
-            setTimeout(() => { statusBox.style.display = 'none'; }, 4000);
+            alert('Database restored successfully!');
+            loadData();
           } else {
-            alert('Error saving settings.');
+            alert('Restore failed.');
           }
         } catch (err) {
-          alert('Network error while saving settings.');
+          alert('Invalid JSON file.');
         }
-      });
+      };
+      reader.readAsText(file);
     }
 
     function escapeHtml(str) {
