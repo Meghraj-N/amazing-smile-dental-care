@@ -216,6 +216,38 @@ app.get("/api/leads", auth.requireAdmin, (_req, res) => {
   res.json({ ok: true, count: leads.length, leads });
 });
 
+app.patch("/api/leads/:id", auth.requireAdmin, (req, res) => {
+  const updated = db.patchLead(req.params.id, req.body || {});
+  if (!updated) return res.status(404).json({ error: "Lead not found" });
+  res.json({ ok: true, lead: updated });
+});
+
+app.get("/api/settings", (_req, res) => {
+  const settings = {
+    clinicPhone: db.getSetting("clinicPhone") || process.env.CLINIC_PHONE || "+919975999529",
+    clinicWhatsapp: db.getSetting("clinicWhatsapp") || "919975999529",
+    clinicHours: db.getSetting("clinicHours") || "Mon–Sat: 10:00 AM–1:30 PM & 5:00 PM–9:30 PM",
+    clinicAddress: db.getSetting("clinicAddress") || "Gol Maidan, Sidhi Vinayak Nagar, Ulhasnagar - 421002",
+    announcementNotice: db.getSetting("announcementNotice") || "★ 4.8 Rating on Google Maps (100+ Verified Patient Reviews)",
+  };
+  res.json({ ok: true, settings });
+});
+
+app.put("/api/settings", auth.requireAdmin, (req, res) => {
+  const updates = req.body || {};
+  const allowed = ["clinicPhone", "clinicWhatsapp", "clinicHours", "clinicAddress", "announcementNotice"];
+  for (const key of allowed) {
+    if (key in updates && typeof updates[key] === "string") {
+      db.setSetting(key, updates[key].trim());
+    }
+  }
+  res.json({ ok: true, message: "Settings saved successfully", settings: updates });
+});
+
+app.get("/admin", (_req, res) => {
+  res.sendFile(path.join(root, "admin.html"));
+});
+
 app.get("/api/stats", auth.requireAdmin, (_req, res) => {
   res.json({ ok: true, stats: db.getStats() });
 });

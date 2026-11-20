@@ -119,6 +119,21 @@ export function saveLead({ name, phone, ipHash }) {
   return newLead;
 }
 
+export function patchLead(id, updates) {
+  const store = loadJson(leadsPath, { leads: [] });
+  const index = store.leads.findIndex(l => l.id === id);
+  if (index === -1) return null;
+  const allowed = ["status", "notes"];
+  for (const key of allowed) {
+    if (key in updates) {
+      store.leads[index][key] = updates[key];
+    }
+  }
+  store.leads[index].updatedAt = new Date().toISOString();
+  atomicWriteJson(leadsPath, store);
+  return store.leads[index];
+}
+
 /* --- Clinic Settings & Configuration --- */
 export function getSetting(key) {
   const settings = loadJson(settingsPath, {});
